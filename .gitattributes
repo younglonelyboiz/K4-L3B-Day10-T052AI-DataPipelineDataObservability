@@ -1,0 +1,6 @@
+# Artifact cua vector store (ChromaDB/HNSW) la du lieu nhi phan.
+# Neu de Git tu chuyen LF <-> CRLF khi checkout thi file index se bi hong
+# (vi du length.bin chua byte 0x0A trong mang so nguyen), lam collection khong doc duoc.
+*.bin binary
+*.sqlite3 binary
+*.sqlite3-journal binary
