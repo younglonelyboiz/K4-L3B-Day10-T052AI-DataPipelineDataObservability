@@ -172,3 +172,24 @@ class LocalEmbeddingIndex:
         if needle in self.documents_by_title:
             return self.documents_by_title[needle]
         return None
+
+
+def load_clean_dataframe(settings: Settings, clean_json_path: Path | None = None) -> pd.DataFrame:
+    """Doc cleaned dataset tu artifact JSON va tra ve DataFrame san sang de index.
+
+    Input : `data/clean/papers_clean.json` (hoac duong dan tuy chon).
+    Output: DataFrame dung schema ma `LocalEmbeddingIndex.build` yeu cau
+            (`paper_id`, `title`, `text_for_embedding`, `published`,
+             `authors_joined`, `categories_joined`, `summary`, `abs_url`, `pdf_url`).
+    """
+    records = read_json(clean_json_path or settings.paths.clean_json)
+    return pd.DataFrame(records)
+
+
+def build_baseline_index(settings: Settings, clean_json_path: Path | None = None) -> LocalEmbeddingIndex:
+    """Build ChromaDB collection `papers-baseline` tu cleaned dataset.
+
+    Idempotent: collection cu cung ten se bi ghi de nen chay lai nhieu lan cho ket qua nhu nhau.
+    """
+    dataframe = load_clean_dataframe(settings, clean_json_path)
+    return LocalEmbeddingIndex.build(dataframe, settings)
