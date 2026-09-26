@@ -12,7 +12,7 @@
 |---:|---|---|---|---|---|
 | 1 | | | | Trưởng nhóm / Pipeline Integrator (`core/`, `phase1.py`, `corruption_flow.py`) | `report/<MSSV1>_HoTen.md` |
 | 2 | | | | Data Foundation & Recovery (`crossref.py`, `cleaning.py`, raw data) | `report/<MSSV2>_HoTen.md` |
-| 3 | | | | RAG & Vector Index (`retrieval/index.py`, `embeddings.py`, ChromaDB) | `report/<MSSV3>_HoTen.md` |
+| 3 | Lê Việt Hoàng | 2A202602596 | viethoangvuivui@gmail.com | RAG & Vector Index (`retrieval/index.py`, `embeddings.py`, ChromaDB) | `report/2A202602596_LeVietHoang.md` |
 | 4 | | | | Observability & Evaluation (`quality.py` GX 1.x, `testset.py`, reporting) | `report/<MSSV4>_HoTen.md` |
 
 *(Nếu nhóm có 3 hoặc 5-6 thành viên, xem bảng phân công chi tiết theo vai trò trong file `CHECKPOINTS.md`)*.
@@ -39,14 +39,21 @@
 - **Điều học được / Đóng góp chính:**
   - Kỹ thuật truy vết nguồn gốc dữ liệu (Data Lineage) và bảo toàn raw snapshot trước khi biến đổi.
 
-### ## HoVaTen3-MSSV3
+### Lê Việt Hoàng - 2A202602596
 - **Vai trò:** Phụ trách RAG, Vector Database & Embedding.
 - **Công việc chi tiết đã hoàn thành:**
-  - Quản lý mô hình embedding `sentence-transformers/all-MiniLM-L6-v2`.
-  - Nạp và quản lý 3 collection riêng biệt trong ChromaDB (`papers-baseline`, `papers-corrupted`, `papers-repaired`).
-  - Xây dựng QA Agent truy vấn ngữ cảnh chính xác theo tài liệu.
+  - Quản lý mô hình embedding `sentence-transformers/all-MiniLM-L6-v2` trong `src/retrieval/embeddings.py` (normalize embedding, cache model).
+  - Bổ sung helper tái sử dụng trong `src/retrieval/index.py`: `load_clean_dataframe()` và `build_baseline_index()` (không đổi chữ ký các hàm cũ).
+  - Nạp collection `papers-baseline` vào ChromaDB từ `data/clean/papers_clean.json`: 24 tài liệu, 24 vector, persist tại `data/chroma/`, manifest tại `data/embeddings/papers_embeddings.json`.
+  - Viết script tái lập `script/build_vector_index.py`: build index + self-check retrieval (mỗi tài liệu tự truy vấn bằng title của nó phải trả về đúng `paper_id`) và in "Tín hiệu hoàn thành".
+  - Kiểm chứng QA Agent trích xuất câu trả lời đúng từ metadata (`src/retrieval/qa.py`, `agent.py`).
+- **Bằng chứng:**
+  - `script/build_vector_index.py` chạy exit code 0, in `Đã index 24 tài liệu vào collection 'papers-baseline'` và `Self-check retrieval 5/5`.
+  - Chạy lại script cho kết quả y hệt (tính idempotent: collection cũ bị ghi đè, không nhân bản vector).
 - **Điều học được / Đóng góp chính:**
-  - Cách cô lập các không gian vector để so sánh khách quan giữa dữ liệu sạch và dữ liệu bị lỗi.
+  - Cách cô lập các không gian vector (baseline/corrupted/repaired) để so sánh khách quan giữa dữ liệu sạch và dữ liệu bị lỗi.
+- **Còn lại (đang chờ phụ thuộc):**
+  - Collection `papers-corrupted` và `papers-repaired` sẽ được nạp sau khi `src/ingestion/corruption.py` hoàn thành (hiện vẫn là stub) — hai collection này tái sử dụng chính `build_baseline_index` với đường dẫn embeddings tương ứng.
 
 ### ## HoVaTen4-MSSV4
 - **Vai trò:** Phụ trách Data Observability & Benchmark Evaluation.
